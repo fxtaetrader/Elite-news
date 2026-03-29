@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Bot Pro - XAUUSD, BTCUSD & DXY Analysis</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>📊 Market Bot Pro</h1>
+                <p>XAUUSD • BTCUSD • DXY • Forex Factory News</p>
+            </div>
+            <div class="status">
+                <div class="status-badge" id="botStatus">
+                    <span class="dot"></span>
+                    <span id="statusText">Initializing...</span>
+                </div>
+                <button id="manualUpdateBtn" class="btn-primary">🔄 Send Update Now</button>
+                <button id="testNewsBtn" class="btn-secondary">📰 Test News Alert</button>
+            </div>
+        </header>
+
+        <!-- Market Grid -->
+        <div class="markets-grid">
+            <!-- XAUUSD -->
+            <div class="market-card featured">
+                <div class="market-header">
+                    <h2>🥇 XAUUSD - Gold</h2>
+                    <span class="market-priority">Priority #1</span>
+                </div>
+                <div class="price-container" id="xauPrice">
+                    <div class="price">Loading...</div>
+                    <div class="change"></div>
+                </div>
+                <div class="technical-levels" id="xauLevels">
+                    <h4>Daily Levels</h4>
+                    <div class="levels-grid"></div>
+                </div>
+            </div>
+
+            <!-- BTCUSD -->
+            <div class="market-card featured">
+                <div class="market-header">
+                    <h2>₿ BTCUSD - Bitcoin</h2>
+                    <span class="market-priority">Priority #2</span>
+                </div>
+                <div class="price-container" id="btcPrice">
+                    <div class="price">Loading...</div>
+                    <div class="change"></div>
+                </div>
+                <div class="technical-levels" id="btcLevels">
+                    <h4>Daily Levels</h4>
+                    <div class="levels-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DXY Section -->
+        <div class="dxy-section">
+            <div class="market-card">
+                <div class="market-header">
+                    <h2>📊 DXY - US Dollar Index</h2>
+                    <span class="market-priority">USD Strength Meter</span>
+                </div>
+                <div class="price-container" id="dxyPrice">
+                    <div class="price">Loading...</div>
+                    <div class="change"></div>
+                </div>
+                <div class="correlation" id="correlation">
+                    <h4>📈 XAUUSD Correlation</h4>
+                    <div class="correlation-value"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Major Pairs -->
+        <div class="major-pairs">
+            <h3>💱 Major Forex Pairs Expectations</h3>
+            <div class="pairs-grid" id="majorPairs">
+                <div class="loading">Loading major pairs...</div>
+            </div>
+        </div>
+
+        <!-- Forex Factory High Impact News -->
+        <div class="news-section">
+            <h3>🔴 Forex Factory High Impact Events</h3>
+            <div class="news-grid" id="forexFactoryNews">
+                <div class="loading">Fetching high impact news...</div>
+            </div>
+        </div>
+
+        <!-- Market Expectations -->
+        <div class="expectations-section">
+            <h3>🎯 Market Expectations & Analysis</h3>
+            <div class="expectations-grid" id="marketExpectations">
+                <div class="loading">Generating analysis...</div>
+            </div>
+        </div>
+
+        <!-- Recent Alerts Log -->
+        <div class="alerts-log">
+            <h3>📨 Recent Telegram Alerts</h3>
+            <div class="log-container" id="updateLog">
+                <div class="log-entry">Bot initializing...</div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <h3>⚙️ Bot Configuration</h3>
+            <div class="config-form">
+                <div class="form-group">
+                    <label>Update Frequency:</label>
+                    <select id="updateFrequency">
+                        <option value="hourly">Hourly</option>
+                        <option value="daily" selected>Daily (8 AM & 4 PM)</option>
+                        <option value="manual">Manual Only</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Send High Impact Alerts:</label>
+                    <input type="checkbox" id="sendHighImpact" checked>
+                </div>
+                <div class="form-group">
+                    <label>Include DXY Analysis:</label>
+                    <input type="checkbox" id="includeDXY" checked>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/market-data.js"></script>
+    <script src="js/forexfactory.js"></script>
+    <script src="js/dxy.js"></script>
+    <script src="js/signals.js"></script>
+    <script src="js/telegram.js"></script>
+    <script src="js/bot.js"></script>
+</body>
+</html>
