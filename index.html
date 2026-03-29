@@ -4,23 +4,212 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Market Bot Pro - Fast Edition</title>
-    <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Fast loading - hide until ready */
-        .loading-placeholder {
-            text-align: center;
-            padding: 40px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo p {
             color: #666;
+            font-size: 0.85rem;
         }
+
+        .status {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: #f0f0f0;
+            border-radius: 20px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+
+        .markets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
         .market-card {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        .market-card.loaded {
-            opacity: 1;
-            transform: translateY(0);
+
+        .market-card.featured {
+            border: 2px solid #ffd700;
+        }
+
+        .market-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .market-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .market-priority {
+            background: #ffd700;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .price-container {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .change {
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        .change.positive { color: #4caf50; }
+        .change.negative { color: #f44336; }
+
+        .alerts-log {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .log-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .log-entry {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .log-time {
+            color: #667eea;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .config-info {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .markets-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .status {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -34,7 +223,7 @@
             <div class="status">
                 <div class="status-badge" id="botStatus">
                     <span class="dot"></span>
-                    <span id="statusText">Initializing...</span>
+                    <span id="statusText">Ready</span>
                 </div>
                 <button id="manualUpdateBtn" class="btn-primary">🔄 Send Update Now</button>
                 <button id="testNewsBtn" class="btn-secondary">📰 Test News</button>
@@ -43,7 +232,7 @@
 
         <div class="markets-grid">
             <!-- XAUUSD -->
-            <div class="market-card featured" id="xauCard">
+            <div class="market-card featured">
                 <div class="market-header">
                     <h2>🥇 XAUUSD - Gold</h2>
                     <span class="market-priority">Priority #1</span>
@@ -55,7 +244,7 @@
             </div>
 
             <!-- BTCUSD -->
-            <div class="market-card featured" id="btcCard">
+            <div class="market-card featured">
                 <div class="market-header">
                     <h2>₿ BTCUSD - Bitcoin</h2>
                     <span class="market-priority">Priority #2</span>
@@ -68,7 +257,7 @@
         </div>
 
         <!-- DXY Section -->
-        <div class="market-card" id="dxyCard">
+        <div class="market-card">
             <div class="market-header">
                 <h2>📊 DXY - US Dollar Index</h2>
                 <span class="market-priority">USD Strength</span>
@@ -79,53 +268,110 @@
             </div>
         </div>
 
+        <!-- Configuration Info -->
+        <div class="market-card">
+            <div class="market-header">
+                <h2>⚙️ Bot Configuration</h2>
+                <span class="market-priority">Active</span>
+            </div>
+            <div class="config-info">
+                <strong>✅ Telegram Connected</strong><br>
+                Chat ID: -1003889484238<br>
+                Topic ID: 50<br>
+                Status: Sending to correct group
+            </div>
+        </div>
+
         <!-- Quick Updates Log -->
         <div class="alerts-log">
             <h3>📨 Live Telegram Updates</h3>
             <div class="log-container" id="updateLog">
                 <div class="log-entry">Bot ready - Click "Send Update Now" to test</div>
+                <div class="log-entry">✅ Configured for Chat ID: -1003889484238 (Topic 50)</div>
             </div>
         </div>
     </div>
 
     <script>
-        // DIRECT CONFIGURATION - NO DELAYS
+        // ============================================
+        // CORRECT TELEGRAM CONFIGURATION
+        // ============================================
         const TELEGRAM_TOKEN = "8735177156:AAGSKgNy8WaG66WK1FKxNCkeqRpxooXstvU";
-        const CHAT_ID = "-1003889484238";
-        const MESSAGE_THREAD_ID = "50";
+        const CHAT_ID = "-1003889484238";  // CORRECT chat ID
+        const MESSAGE_THREAD_ID = "50";     // CORRECT topic ID
+        
+        console.log("Bot configured with:");
+        console.log("Chat ID:", CHAT_ID);
+        console.log("Topic ID:", MESSAGE_THREAD_ID);
         
         // Cache for market data
         let cachedData = null;
-        let lastUpdate = null;
         
-        // Send to Telegram function
+        // Send to Telegram function - CORRECTED
         async function sendToTelegram(message) {
             try {
                 const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
                 const payload = {
                     chat_id: CHAT_ID,
                     text: message,
-                    parse_mode: 'Markdown'
+                    parse_mode: "Markdown"
                 };
-                if (MESSAGE_THREAD_ID && MESSAGE_THREAD_ID !== "50") {
+                
+                // Add message thread ID for topic
+                if (MESSAGE_THREAD_ID && MESSAGE_THREAD_ID !== "") {
                     payload.message_thread_id = parseInt(MESSAGE_THREAD_ID);
+                    console.log("Sending to topic:", MESSAGE_THREAD_ID);
                 }
+                
+                console.log("Sending to chat_id:", CHAT_ID);
                 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+                
                 const data = await response.json();
+                
                 if (data.ok) {
-                    addToLog("✅ Message sent to Telegram", "success");
+                    console.log("✅ Message sent successfully to chat:", CHAT_ID);
+                    addToLog("✅ Message sent to correct Telegram group", "success");
                     return true;
+                } else {
+                    console.error("Telegram API error:", data);
+                    addToLog(`❌ API Error: ${data.description}`, "error");
+                    return false;
                 }
-                return false;
             } catch(e) {
-                addToLog("❌ Failed: " + e.message, "error");
+                console.error("Send error:", e);
+                addToLog(`❌ Failed: ${e.message}`, "error");
                 return false;
             }
+        }
+        
+        // Test connection to verify correct chat
+        async function testTelegramConnection() {
+            addToLog("🔍 Testing Telegram connection...", "info");
+            
+            const testMessage = `
+🤖 *Connection Test Successful*
+
+✅ Chat ID: ${CHAT_ID}
+✅ Topic ID: ${MESSAGE_THREAD_ID}
+✅ Bot is configured correctly
+
+📊 *Market Bot Pro is online!*
+
+Click "Send Update Now" for live market data
+            `;
+            
+            const success = await sendToTelegram(testMessage);
+            if (success) {
+                addToLog("✅ Telegram connection verified! Bot is in correct group", "success");
+            } else {
+                addToLog("❌ Connection failed - check token and chat ID", "error");
+            }
+            return success;
         }
         
         // Quick market data fetch
@@ -148,7 +394,10 @@
                     updateUI('btc', results.btc);
                     addToLog(`₿ BTC: $${results.btc.price.toLocaleString()}`, "success");
                 }
-            } catch(e) { console.log("BTC fetch error"); }
+            } catch(e) { 
+                console.log("BTC fetch error:", e);
+                updateUI('btc', results.btc);
+            }
             
             // Fetch DXY
             try {
@@ -162,9 +411,12 @@
                     updateUI('dxy', results.dxy);
                     addToLog(`📊 DXY: ${results.dxy.price} (${results.dxy.change >=0 ? '+' : ''}${results.dxy.change}%)`, "success");
                 }
-            } catch(e) { console.log("DXY fetch error"); }
+            } catch(e) { 
+                console.log("DXY fetch error:", e);
+                updateUI('dxy', results.dxy);
+            }
             
-            // Fetch Gold (using metals.live - fastest free API)
+            // Fetch Gold
             try {
                 const goldRes = await fetch('https://api.metals.live/v1/spot/gold');
                 if (goldRes.ok) {
@@ -177,14 +429,11 @@
                     }
                 }
             } catch(e) { 
-                // Fallback to realistic price
-                results.xau.price = (2150 + (Math.random() * 20 - 10)).toFixed(2);
-                results.xau.change = (Math.random() * 2 - 1).toFixed(2);
+                console.log("Gold fetch error:", e);
                 updateUI('xau', results.xau);
             }
             
             cachedData = results;
-            lastUpdate = new Date();
             return results;
         }
         
@@ -198,8 +447,6 @@
                     changeEl.textContent = `${data.change >= 0 ? '+' : ''}${data.change}%`;
                     changeEl.className = `change ${data.change >= 0 ? 'positive' : 'negative'}`;
                 }
-                const card = document.getElementById('xauCard');
-                if (card) card.classList.add('loaded');
             }
             
             if (market === 'btc') {
@@ -210,8 +457,6 @@
                     changeEl.textContent = `${data.change >= 0 ? '+' : ''}${data.change}%`;
                     changeEl.className = `change ${data.change >= 0 ? 'positive' : 'negative'}`;
                 }
-                const card = document.getElementById('btcCard');
-                if (card) card.classList.add('loaded');
             }
             
             if (market === 'dxy') {
@@ -222,15 +467,13 @@
                     changeEl.textContent = `${data.change >= 0 ? '+' : ''}${data.change}%`;
                     changeEl.className = `change ${data.change >= 0 ? 'positive' : 'negative'}`;
                 }
-                const card = document.getElementById('dxyCard');
-                if (card) card.classList.add('loaded');
             }
         }
         
         // Generate and send complete market update
         async function sendMarketUpdate() {
             addToLog("🚀 Starting market update...", "info");
-            updateStatus('updating');
+            updateButtonState(true);
             
             // Fetch fresh data
             const data = await fetchMarketData();
@@ -244,11 +487,12 @@
             const success = await sendToTelegram(message);
             
             if (success) {
-                addToLog("✅ Market update sent successfully!", "success");
-                updateStatus('active');
+                addToLog("✅ Market update sent successfully to chat!", "success");
             } else {
-                updateStatus('error', 'Send failed');
+                addToLog("❌ Failed to send update", "error");
             }
+            
+            updateButtonState(false);
         }
         
         // Build beautiful Telegram message
@@ -257,7 +501,7 @@
             const btcEmoji = data.btc.change >= 0 ? '📈' : '📉';
             const dxyEmoji = data.dxy.change >= 0 ? '🟢' : '🔴';
             
-            // Generate expectations based on data
+            // Generate expectations
             let goldOutlook = data.xau.change > 0.5 ? 'Bullish momentum building' : 
                              data.xau.change < -0.5 ? 'Bearish pressure increasing' : 
                              'Sideways consolidation';
@@ -297,15 +541,18 @@ ${dxyEmoji} Change: ${data.dxy.change >= 0 ? '+' : ''}${data.dxy.change}%
 • EUR/USD: ${data.dxy.change < 0 ? '🟢 Bullish' : '🔴 Bearish'}
 • GBP/USD: ${data.dxy.change < 0 ? '🟢 Bullish' : '🔴 Bearish'}
 • USD/JPY: ${data.dxy.change > 0 ? '🟢 Bullish' : '🔴 Bearish'}
+• AUD/USD: ${data.dxy.change < 0 ? '🟢 Bullish' : '🔴 Bearish'}
 
 🔴 *UPCOMING HIGH IMPACT NEWS:*
-• US Economic Data - Today
-• Fed Speakers - This Week
+• US Economic Data - Monitor today
+• Fed Speakers - This week
 
 ━━━━━━━━━━━━━━━━━━━━━
 
-🤖 *Market Bot Pro* - Automated Updates
-⚠️ *DYOR* - This is analysis only
+🤖 *Market Bot Pro*
+✅ Chat ID: ${CHAT_ID}
+✅ Topic ID: ${MESSAGE_THREAD_ID}
+⚠️ *DYOR* - Analysis only
 🔄 Next update: Scheduled
             `;
         }
@@ -331,6 +578,7 @@ Let initial volatility settle
 ━━━━━━━━━━━━━━━━━━━━━
             `;
             
+            addToLog("🔴 Sending high impact alert...", "info");
             await sendToTelegram(message);
             addToLog("🔴 High impact alert sent", "success");
         }
@@ -346,43 +594,25 @@ Let initial volatility settle
                 logEntry.innerHTML = `<span class="log-time">[${time}]</span> ${icon} ${message}`;
                 logContainer.insertBefore(logEntry, logContainer.firstChild);
                 
-                // Keep only last 20 logs
-                while (logContainer.children.length > 20) {
+                // Keep only last 30 logs
+                while (logContainer.children.length > 30) {
                     logContainer.removeChild(logContainer.lastChild);
                 }
             }
         }
         
-        function updateStatus(status, errorMsg = null) {
-            const statusText = document.getElementById('statusText');
-            const dot = document.querySelector('.dot');
-            
-            if (!statusText) return;
-            
-            switch(status) {
-                case 'initializing':
-                    statusText.textContent = 'Ready';
-                    if (dot) dot.style.background = '#ff9800';
-                    break;
-                case 'active':
-                    statusText.textContent = 'Active';
-                    if (dot) dot.style.background = '#4caf50';
-                    break;
-                case 'updating':
-                    statusText.textContent = 'Updating...';
-                    if (dot) dot.style.background = '#2196f3';
-                    break;
-                case 'error':
-                    statusText.textContent = `Error`;
-                    if (dot) dot.style.background = '#f44336';
-                    break;
+        function updateButtonState(loading) {
+            const btn = document.getElementById('manualUpdateBtn');
+            if (btn) {
+                btn.disabled = loading;
+                btn.textContent = loading ? "⏳ Sending..." : "🔄 Send Update Now";
             }
         }
         
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', async () => {
             addToLog("🤖 Bot initializing...", "info");
-            updateStatus('initializing');
+            addToLog(`✅ Target Chat ID: ${CHAT_ID} (Topic: ${MESSAGE_THREAD_ID})`, "success");
             
             // Setup buttons
             document.getElementById('manualUpdateBtn')?.addEventListener('click', () => {
@@ -393,15 +623,13 @@ Let initial volatility settle
                 sendHighImpactAlert();
             });
             
-            // Initial data load (don't wait, show quickly)
-            fetchMarketData();
+            // Initial data load
+            await fetchMarketData();
             
-            // Send test message to confirm bot works
+            // Test connection to verify correct chat
             setTimeout(async () => {
-                await sendToTelegram("🤖 *Market Bot Pro Online*\n\nBot is active and monitoring markets!\n\nClick 'Send Update Now' for latest data");
-                updateStatus('active');
-                addToLog("✅ Bot ready! Click 'Send Update Now'", "success");
-            }, 2000);
+                await testTelegramConnection();
+            }, 1000);
         });
     </script>
 </body>
