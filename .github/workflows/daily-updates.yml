@@ -1,0 +1,30 @@
+name: Automated Market Updates
+
+on:
+  schedule:
+    - cron: '0 8,16 * * *'  # 8 AM and 4 PM daily
+  workflow_dispatch:
+
+jobs:
+  send-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram Update
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            -d chat_id="${CHAT_ID}" \
+            -d parse_mode="Markdown" \
+            -d text="📊 *DAILY MARKET UPDATE*
+
+$(date '+📅 %B %d, %Y')
+⏰ $(date '+%H:%M UTC')
+
+🥇 *XAUUSD* - Checking live prices...
+₿ *BTCUSD* - Checking live prices...
+
+📈 *Market analysis will be sent shortly*
+
+🤖 *Market Bot Pro*"
